@@ -1,23 +1,23 @@
 #pragma once
 
-#include <string>
 #include <cstdint>
+#include <string>
 
 namespace NumericClient {
 
-class Client { 
+class Client {
 public:
-    Client(const std::string& host, uint16_t port);
-    void start();
-    void stop();
+  Client(const std::string &host, uint16_t port);
+  void start();
+  void stop();
 
 private:
-    uint16_t generate_random_number();
+  uint16_t generate_random_number();
 
 private:
-    std::string host_;
-    uint16_t port_;
-    bool is_running_;
+  std::string host_;
+  uint16_t port_;
+  bool is_running_;
 };
 
-}
+} // namespace NumericClient
