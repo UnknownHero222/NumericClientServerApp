@@ -9,8 +9,13 @@ using namespace boost::asio::ip;
 Server::Server(const std::string &host, uint32_t port)
     : host_(host), port_(port), is_running_(false) {}
 
+Server::~Server() { stop(); }
+
 void Server::start() try {
-  is_running_ = true;
+  if (is_running_.exchange(true)) {
+    std::cerr << "Server is already running." << std::endl;
+    return;
+  }
 
   tcp::acceptor acceptor(
       io_context_, tcp::endpoint(boost::asio::ip::make_address(host_), port_));
@@ -32,9 +37,11 @@ void Server::start() try {
 }
 
 void Server::stop() try {
-  is_running_ = false;
+  if (!is_running_.exchange(true)) {
+    std::cerr << "Server is dead" << std::endl;
+    return;
+  }
 
-  
   io_context_.stop();
 
 } catch (const boost::exception &ex) {

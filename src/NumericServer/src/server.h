@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <boost/asio.hpp>
 #include <cstdint>
 #include <string>
@@ -11,7 +12,7 @@ using namespace boost::asio;
 class Server {
 public:
   Server() = default;
-  ~Server() = default;
+  ~Server();
   Server(const std::string &host, uint32_t port);
   void start();
   void stop();
@@ -22,9 +23,9 @@ private:
 private:
   std::string host_;
   uint32_t port_;
-  bool is_running_;
+  std::atomic<bool> is_running_;
 
   io_context io_context_;
 };
 
-} // namespace NumericClient
+} // namespace NumericServer
