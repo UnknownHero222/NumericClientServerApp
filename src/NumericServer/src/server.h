@@ -1,9 +1,11 @@
 #pragma once
 
+#include "tcp_conn.hpp"
 #include <atomic>
 #include <boost/asio.hpp>
 #include <cstdint>
 #include <string>
+#include <unordered_set>
 
 namespace NumericServer {
 
@@ -18,13 +20,15 @@ public:
   void stop();
 
 private:
-  uint16_t generate_random_number();
+  uint32_t handle_numbers();
 
 private:
   std::string host_;
   uint32_t port_;
 
   io_context io_context_;
+
+  std::unordered_set<uint32_t> numbers_;
 };
 
 } // namespace NumericServer

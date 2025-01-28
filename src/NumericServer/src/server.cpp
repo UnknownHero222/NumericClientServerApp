@@ -26,3 +26,16 @@ void Server::stop() try {
 } catch (const std::exception &ex) {
   std::cerr << "Exception: " << ex.what() << std::endl;
 }
+
+uint32_t Server::handle_numbers() {
+  if (numbers_.empty()) {
+    return 0;
+  }
+
+  uint32_t squares_sum = 0;
+  for (auto number : numbers_) {
+    squares_sum += number * number;
+  }
+
+  return squares_sum / numbers_.size();
+}
