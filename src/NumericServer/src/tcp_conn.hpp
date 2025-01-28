@@ -16,16 +16,12 @@ public:
     return Pointer(new TcpConnection(io_context));
   }
 
- tcp::socket& socket() {
-    return socket_;
-  }
+  tcp::socket &socket() { return socket_; }
 
-  void start() {
-    boost::asio::async_write(
-        socket_, boost::asio::buffer(message_),
-        std::bind(&TcpConnection::handle_write, shared_from_this(),
-                  boost::asio::placeholders::error,
-                  boost::asio::placeholders::bytes_transferred));
+  void start(std::function<void(uint32_t, std::function<void(uint32_t)>)>
+                 process_request) {
+    process_request_ = process_request;
+    // TODO: Implement reading from the socket
   }
 
 private:
@@ -34,8 +30,11 @@ private:
   void handle_write(const boost::system::error_code & /*error*/,
                     size_t /*bytes_transferred*/) {}
 
+private:
   tcp::socket socket_;
   std::string message_;
+
+  std::function<void(uint32_t, std::function<void(uint32_t)>)> process_request_;
 };
 
 } // namespace NumericServer

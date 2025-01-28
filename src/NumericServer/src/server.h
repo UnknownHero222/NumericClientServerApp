@@ -13,20 +13,22 @@ using namespace boost::asio;
 
 class Server {
 public:
-  Server() = default;
-  Server(const std::string &host, uint32_t port);
+  explicit Server(const std::string &host, uint32_t port,
+                  io_context &io_context);
   ~Server();
-  void start();
+  void start_accept();
   void stop();
 
 private:
+  void handle_request(uint32_t number, std::function<void(uint32_t)> respond);
   uint32_t handle_numbers();
 
 private:
   std::string host_;
   uint32_t port_;
 
-  io_context io_context_;
+  io_context &io_context_;
+  ip::tcp::acceptor acceptor_;
 
   std::unordered_set<uint32_t> numbers_;
 };
