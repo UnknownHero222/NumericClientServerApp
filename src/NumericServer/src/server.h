@@ -12,8 +12,8 @@ using namespace boost::asio;
 class Server {
 public:
   Server() = default;
-  ~Server();
   Server(const std::string &host, uint32_t port);
+  ~Server();
   void start();
   void stop();
 
@@ -23,7 +23,6 @@ private:
 private:
   std::string host_;
   uint32_t port_;
-  std::atomic<bool> is_running_;
 
   io_context io_context_;
 };
