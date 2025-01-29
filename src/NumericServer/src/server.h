@@ -5,6 +5,7 @@
 #include <boost/asio.hpp>
 #include <cstdint>
 #include <string>
+#include <thread>
 #include <unordered_set>
 
 namespace NumericServer {
@@ -22,6 +23,7 @@ public:
 private:
   void handle_request(uint32_t number, std::function<void(uint32_t)> respond);
   uint32_t handle_numbers();
+  void dump_numbers();
 
 private:
   std::string host_;
@@ -31,6 +33,9 @@ private:
   ip::tcp::acceptor acceptor_;
 
   std::unordered_set<uint32_t> numbers_;
+
+  std::thread dumping_thread_;
+  bool is_running_{false};
 };
 
 } // namespace NumericServer
