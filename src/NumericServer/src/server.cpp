@@ -46,6 +46,7 @@ void Server::stop() try {
 
 void Server::handle_request(uint32_t number,
                             std::function<void(uint32_t)> respond) {
+  std::cout << "Handling number: " << number << std::endl;
   numbers_.insert(number);
   respond(handle_numbers());
 }

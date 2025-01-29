@@ -1,6 +1,7 @@
 #pragma once
 
 #include <boost/asio.hpp>
+#include <iostream>
 #include <memory>
 
 namespace NumericServer {
@@ -21,11 +22,47 @@ public:
   void start(std::function<void(uint32_t, std::function<void(uint32_t)>)>
                  process_request) {
     process_request_ = process_request;
-    // TODO: Implement reading from the socket
+    do_read();
   }
 
 private:
   TcpConnection(boost::asio::io_context &io_context) : socket_(io_context) {}
+
+  void do_read() {
+    auto self = shared_from_this();
+    boost::asio::async_read_until(
+        socket_, boost::asio::dynamic_buffer(message_), '\n',
+        [this, self](const boost::system::error_code &error,
+                     size_t bytes_transferred) {
+          if (!error) {
+            try {
+              uint32_t number = std::stoul(message_);
+              message_.clear();
+
+              process_request_(
+                  number, [this, self](uint32_t result) { do_write(result); });
+            } catch (const std::exception &e) {
+              std::cerr << "Error parsing number: " << e.what() << std::endl;
+            }
+          } else {
+            std::cerr << "Read error: " << error.message() << std::endl;
+          }
+        });
+  }
+
+  void do_write(uint32_t number) {
+    auto self = shared_from_this();
+    std::string response = std::to_string(number) + "\n";
+
+    boost::asio::async_write(
+        socket_, boost::asio::buffer(response),
+        [this, self](const boost::system::error_code &error,
+                     size_t /*bytes_transferred*/) {
+          if (error) {
+            std::cerr << "Write error: " << error.message() << std::endl;
+          }
+        });
+  }
 
   void handle_write(const boost::system::error_code & /*error*/,
                     size_t /*bytes_transferred*/) {}
