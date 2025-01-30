@@ -11,9 +11,8 @@ Server::Server(const std::string &host, uint32_t port, io_context &io_context)
     : host_(host), port_(port), io_context_(io_context),
       acceptor_(io_context, tcp::endpoint(tcp::v4(), port)) {
   start_accept();
+  dump_numbers();
   is_running_ = true;
-
-  dumping_thread_ = std::thread(&Server::dump_numbers, this);
 }
 
 Server::~Server() { stop(); }
@@ -40,15 +39,14 @@ void Server::start_accept() try {
 }
 
 void Server::stop() try {
+  if (dump_timer_) {
+    dump_timer_->cancel();
+  }
+
   acceptor_.close();
   io_context_.stop();
 
-  if (dumping_thread_.joinable()) {
-    dumping_thread_.join();
-  }
-
   is_running_ = false;
-
 } catch (const boost::exception &ex) {
   std::cerr << "Boost exception" << std::endl;
 } catch (const std::exception &ex) {
@@ -76,23 +74,31 @@ uint32_t Server::handle_numbers() {
 }
 
 void Server::dump_numbers() {
-  while (is_running_) {
-    std::this_thread::sleep_for(std::chrono::minutes(1));
-
-    if (numbers_.empty()) {
-      continue;
-    }
-
-    std::ofstream file("numbers_dump", std::ios::binary);
-    if (!file.is_open()) {
-      std::cerr << "Failed to open file for writing.\n";
-      return;
-    }
-
-    for (auto number : numbers_) {
-      file.write(reinterpret_cast<const char *>(&number), sizeof(number));
-    }
-
-    file.close();
+  if (numbers_.empty()) {
+    return;
   }
+
+  dump_timer_ = std::make_unique<boost::asio::steady_timer>(
+      io_context_, std::chrono::minutes(1));
+
+  dump_timer_->async_wait([this](const boost::system::error_code &error) {
+    if (!error && is_running_) {
+      save_numbers_to_file();
+      dump_numbers();
+    }
+  });
+}
+
+void Server::save_numbers_to_file() {
+  std::ofstream file("numbers_dump", std::ios::binary);
+  if (!file.is_open()) {
+    std::cerr << "Failed to open file for writing.\n";
+    return;
+  }
+
+  for (auto number : numbers_) {
+    file.write(reinterpret_cast<const char *>(&number), sizeof(number));
+  }
+
+  file.close();
 }

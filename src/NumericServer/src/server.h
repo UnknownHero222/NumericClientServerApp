@@ -23,7 +23,9 @@ public:
 private:
   void handle_request(uint32_t number, std::function<void(uint32_t)> respond);
   uint32_t handle_numbers();
+
   void dump_numbers();
+  void save_numbers_to_file();
 
 private:
   std::string host_;
@@ -34,7 +36,7 @@ private:
 
   std::unordered_set<uint32_t> numbers_;
 
-  std::thread dumping_thread_;
+  std::unique_ptr<boost::asio::steady_timer> dump_timer_;
   bool is_running_{false};
 };
 
