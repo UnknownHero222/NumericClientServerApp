@@ -1,7 +1,7 @@
 #include "server.h"
+#include <fstream>
 #include <iostream>
 #include <random>
-#include <fstream>
 
 using namespace NumericServer;
 
@@ -77,13 +77,12 @@ uint32_t Server::handle_numbers() {
 
 void Server::dump_numbers() {
   while (is_running_) {
-    std::cout << "Dumping numbers..." << std::endl;
-    std::this_thread::sleep_for(std::chrono::seconds(5));
+    std::this_thread::sleep_for(std::chrono::minutes(1));
 
     if (numbers_.empty()) {
       continue;
     }
- 
+
     std::ofstream file("numbers_dump", std::ios::binary);
     if (!file.is_open()) {
       std::cerr << "Failed to open file for writing.\n";
@@ -91,7 +90,7 @@ void Server::dump_numbers() {
     }
 
     for (auto number : numbers_) {
-      file.write(reinterpret_cast<const char*>(&number), sizeof(number));
+      file.write(reinterpret_cast<const char *>(&number), sizeof(number));
     }
 
     file.close();
