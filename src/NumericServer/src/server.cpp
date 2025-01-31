@@ -1,17 +1,23 @@
 #include "server.h"
+#include "simple_logger.h"
 #include <fstream>
 #include <iostream>
 #include <random>
 
 using namespace NumericServer;
+using namespace common;
 
 using namespace boost::asio::ip;
 
 Server::Server(const ServerConfig &config, io_context &io_context)
     : config_(config), io_context_(io_context),
       acceptor_(io_context, tcp::endpoint(tcp::v4(), config.port)) {
+  SimpleLogger::set_service_name("NumericServer");
+
   start_accept();
-  dump_numbers();
+
+  boost::asio::post(io_context_, [this]() { this->dump_numbers(); });
+
   is_running_ = true;
 }
 
@@ -32,10 +38,8 @@ void Server::start_accept() try {
         start_accept();
       });
 
-} catch (const boost::exception &ex) {
-  std::cerr << "Boost exception" << std::endl;
 } catch (const std::exception &ex) {
-  std::cerr << "Exception: " << ex.what() << std::endl;
+  SimpleLogger::error_log("Exception: " + std::string(ex.what()));
 }
 
 void Server::stop() try {
@@ -47,17 +51,16 @@ void Server::stop() try {
   io_context_.stop();
 
   is_running_ = false;
-} catch (const boost::exception &ex) {
-  std::cerr << "Boost exception" << std::endl;
 } catch (const std::exception &ex) {
-  std::cerr << "Exception: " << ex.what() << std::endl;
+  SimpleLogger::error_log("Exception: " + std::string(ex.what()));
 }
 
 void Server::handle_request(uint32_t number,
                             std::function<void(uint32_t)> respond) {
   std::lock_guard<std::mutex> lock(mtx_);
 
-  std::cout << "Number from the request: " << number << std::endl;
+  SimpleLogger::log("Number from the request " + std::to_string(number));
+
   numbers_.insert(number);
   respond(handle_numbers());
 }
@@ -78,7 +81,7 @@ uint32_t Server::handle_numbers() {
 }
 
 void Server::dump_numbers() {
-  if (numbers_.empty()) {
+  if (numbers_.size() == 0) {
     return;
   }
 
@@ -91,12 +94,15 @@ void Server::dump_numbers() {
       dump_numbers();
     }
   });
+
+  SimpleLogger::log(std::to_string(numbers_.size()) +
+                    " numbers saved to the file");
 }
 
 void Server::save_numbers_to_file() {
   std::ofstream file("numbers_dump", std::ios::binary);
   if (!file.is_open()) {
-    std::cerr << "Failed to open file for writing.\n";
+    SimpleLogger::error_log("Failed to open file for writing");
     return;
   }
 

@@ -1,6 +1,8 @@
 #include "tcp_conn.h"
+#include "simple_logger.h"
 
 using namespace NumericServer;
+using namespace common;
 
 void TcpConnection::start(
     std::function<void(uint32_t, std::function<void(uint32_t)>)>
@@ -23,11 +25,11 @@ void TcpConnection::do_read() try {
           process_request_(number,
                            [this, self](uint32_t result) { do_write(result); });
         } else {
-          std::cerr << "Read error: " << error.message() << std::endl;
+          SimpleLogger::error_log("Read error: " + error.message());
         }
       });
 } catch (const std::exception &ex) {
-  std::cerr << "Exception: " << ex.what() << std::endl;
+  SimpleLogger::error_log("Exception: " + std::string(ex.what()));
 }
 
 void TcpConnection::do_write(uint32_t number) {

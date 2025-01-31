@@ -10,5 +10,7 @@ if (NOT Boost_FOUND)
     message(FATAL_ERROR "Boost not found")
 endif()
 
+add_subdirectory(src/common/SimpleLogger)
+
 add_subdirectory(src/NumericServer)
 add_subdirectory(src/NumericClient)

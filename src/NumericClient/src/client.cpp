@@ -1,4 +1,5 @@
 #include "client.h"
+#include "simple_logger.h"
 #include <iostream>
 #include <random>
 
@@ -6,19 +7,22 @@ using namespace NumericClient;
 
 using namespace boost::asio;
 using namespace boost::asio::ip;
+using namespace common;
 
 static constexpr auto kMinRandomNumber = 0;
 static constexpr auto kMaxRandomNumber = 1023;
 
 Client::Client(const std::string &host, uint16_t port)
     : io_context_(), socket_(io_context_), endpoint_(make_address(host), port) {
+  SimpleLogger::set_service_name("NumericClient");
 }
 
 void Client::send_request() try {
   socket_.connect(endpoint_);
 
-  std::string message = std::to_string(generate_random_number()) + "\n";
-  boost::asio::write(socket_, buffer(message));
+  std::string message = std::to_string(generate_random_number());
+  boost::asio::write(socket_, buffer(message + "\n"));
+  SimpleLogger::log("Request to server: " + message);
 
   std::string response;
   boost::asio::streambuf response_buffer;
@@ -27,11 +31,11 @@ void Client::send_request() try {
   std::istream response_stream(&response_buffer);
   std::getline(response_stream, response);
 
-  std::cout << "Response from server: " << response << std::endl;
+  SimpleLogger::log("Response from server: " + response);
 
   socket_.close();
 } catch (const std::exception &ex) {
-  std::cerr << "Exception: " << ex.what() << std::endl;
+  SimpleLogger::error_log("Exception: " + std::string(ex.what()));
 }
 
 uint16_t Client::generate_random_number() {
