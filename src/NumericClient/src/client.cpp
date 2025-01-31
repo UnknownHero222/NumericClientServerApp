@@ -14,7 +14,6 @@ static constexpr auto kMaxRandomNumber = 1023;
 
 Client::Client(const std::string &host, uint16_t port)
     : io_context_(), socket_(io_context_), endpoint_(make_address(host), port) {
-  SimpleLogger::set_service_name("NumericClient");
 }
 
 void Client::send_request() try {

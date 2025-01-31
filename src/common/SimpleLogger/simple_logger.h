@@ -19,7 +19,8 @@ private:
   static std::string get_current_time();
   static void write_log(const std::string &prefix, const std::string &message);
 
-  static std::string service_name_;
-  static std::string log_file_;
+private:
+  static std::string service_name_{"DefaultService"};
+  static std::string log_filepath_;
 };
 } // namespace common

@@ -1,20 +1,22 @@
-#include "client.h"
+#include "manager.h"
+#include "simple_logger.h"
 #include <iostream>
 
+using namespace common;
 using namespace NumericClient;
 
 static constexpr auto kHost = "127.0.0.1";
 static constexpr auto kPort = 35123;
+static constexpr auto kClientCount = 5;
 
 int main() {
-  NumericClient::Client client(kHost, kPort);
+  ClientManager client_manager(kHost, kPort, kClientCount);
+  client_manager.start();
 
-  std::cout << "Client started. Sending requests..." << std::endl;
+  SimpleLogger::log("Press ENTER to stop clients...");
+  std::cin.get();
 
-  while (true) {
-    client.send_request();
+  client_manager.stop();
 
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-  }
   return 0;
 }
