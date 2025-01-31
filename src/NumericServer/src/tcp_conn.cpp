@@ -9,26 +9,25 @@ void TcpConnection::start(
   do_read();
 }
 
-void TcpConnection::do_read() {
+void TcpConnection::do_read() try {
   auto self = shared_from_this();
+
   boost::asio::async_read_until(
       socket_, boost::asio::dynamic_buffer(message_), '\n',
       [this, self](const boost::system::error_code &error,
                    size_t bytes_transferred) {
         if (!error) {
-          try {
-            uint32_t number = std::stoul(message_);
-            message_.clear();
+          uint32_t number = std::stoul(message_);
+          message_.clear();
 
-            process_request_(
-                number, [this, self](uint32_t result) { do_write(result); });
-          } catch (const std::exception &e) {
-            std::cerr << "Error parsing number: " << e.what() << std::endl;
-          }
+          process_request_(number,
+                           [this, self](uint32_t result) { do_write(result); });
         } else {
           std::cerr << "Read error: " << error.message() << std::endl;
         }
       });
+} catch (const std::exception &ex) {
+  std::cerr << "Exception: " << ex.what() << std::endl;
 }
 
 void TcpConnection::do_write(uint32_t number) {
@@ -37,7 +36,7 @@ void TcpConnection::do_write(uint32_t number) {
 
   boost::asio::async_write(socket_, boost::asio::buffer(response),
                            [this, self](const boost::system::error_code &error,
-                                        size_t /*bytes_transferred*/) {
+                                        size_t bytes_transferred) {
                              if (error) {
                                std::cerr << "Write error: " << error.message()
                                          << std::endl;
