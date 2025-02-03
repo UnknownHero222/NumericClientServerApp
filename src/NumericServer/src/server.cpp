@@ -9,9 +9,9 @@ using namespace common;
 
 using namespace boost::asio::ip;
 
-Server::Server(const ServerConfig &config, io_context &io_context)
-    : config_(config), io_context_(io_context),
-      acceptor_(io_context, tcp::endpoint(tcp::v4(), config.port)) {
+Server::Server(const ServerSettings &settings, io_context &io_context)
+    : settings_(settings), io_context_(io_context),
+      acceptor_(io_context, tcp::endpoint(tcp::v4(), settings.port)) {
   SimpleLogger::set_service_name("NumericServer");
 
   start_accept();
@@ -86,7 +86,7 @@ void Server::dump_numbers() {
   }
 
   dump_timer_ = std::make_unique<boost::asio::steady_timer>(
-      io_context_, std::chrono::seconds(config_.dump_interval_seconds));
+      io_context_, std::chrono::seconds(settings_.dump_interval_seconds));
 
   dump_timer_->async_wait([this](const boost::system::error_code &error) {
     if (!error && is_running_) {

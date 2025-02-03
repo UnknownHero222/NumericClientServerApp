@@ -16,7 +16,7 @@ using namespace boost::asio;
 
 class Server {
 public:
-  explicit Server(const ServerConfig &config, io_context &io_context);
+  explicit Server(const ServerSettings &config, io_context &io_context);
   ~Server();
   void start_accept();
   void stop();
@@ -29,7 +29,7 @@ private:
   void save_numbers_to_file();
 
 private:
-  ServerConfig config_;
+  ServerSettings settings_;
   io_context &io_context_;
 
   std::string host_;

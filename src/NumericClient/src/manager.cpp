@@ -6,9 +6,8 @@
 using namespace common;
 using namespace NumericClient;
 
-ClientManager::ClientManager(const std::string &host, uint16_t port,
-                             size_t client_count)
-    : host_(host), port_(port), client_count_(client_count) {
+ClientManager::ClientManager(const ClientSettings &settings)
+    : settings_(settings) {
   is_running_ = true;
 
   SimpleLogger::set_service_name("NumericClient");
@@ -18,10 +17,10 @@ ClientManager::~ClientManager() { stop(); }
 
 void ClientManager::start() {
 
-  SimpleLogger::log("Starting " + std::to_string(client_count_) +
+  SimpleLogger::log("Starting " + std::to_string(settings_.workers_count) +
                     " clients...");
 
-  for (size_t i = 0; i < client_count_; ++i) {
+  for (size_t i = 0; i < settings_.workers_count; ++i) {
     client_threads_.emplace_back(&ClientManager::run_client, this);
   }
 }
@@ -44,7 +43,7 @@ void ClientManager::stop() {
 }
 
 void ClientManager::run_client() {
-  NumericClient::Client client(host_, port_);
+  NumericClient::Client client(settings_.server_url, settings_.server_port);
 
   while (is_running_) {
     client.send_request();
