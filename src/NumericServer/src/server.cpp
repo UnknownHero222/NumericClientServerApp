@@ -19,6 +19,9 @@ Server::Server(const ServerSettings &settings, io_context &io_context)
   boost::asio::post(io_context_, [this]() { this->dump_numbers(); });
 
   is_running_ = true;
+
+  SimpleLogger::log("Server started on " + settings.host + ":" +
+                    std::to_string(settings.port));
 }
 
 Server::~Server() { stop(); }

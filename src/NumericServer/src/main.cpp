@@ -5,22 +5,18 @@
 using namespace common;
 using namespace NumericServer;
 
-static constexpr auto kHost = "127.0.0.1";
-static constexpr auto kPort = 35123;
-
 int main(int argc, const char **argv) {
   try {
     ServerConfig config;
     config.parse(argc, const_cast<char **>(argv));
 
-    ServerSettings settings{config.get<std::string>("host"),
-                            config.get<uint16_t>("port"),
-                            config.get<int>("dump_timeout_sec")};
+    ServerSettings settings{config.get<std::string>("server.host"),
+                            config.get<uint16_t>("server.port"),
+                            config.get<uint16_t>("server.dump_timeout_sec"), 
+                            config.get<std::string>("log.logs_directory_path")};
 
     boost::asio::io_context io_context;
     NumericServer::Server server(settings, io_context);
-
-    std::cout << "Server is running on " << kHost << ":" << kPort << std::endl;
 
     io_context.run();
   } catch (const std::exception &e) {

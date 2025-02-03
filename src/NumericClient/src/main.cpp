@@ -6,18 +6,14 @@
 using namespace common;
 using namespace NumericClient;
 
-static constexpr auto kHost = "127.0.0.1";
-static constexpr auto kPort = 35123;
-static constexpr auto kClientCount = 5;
-
 int main(int argc, const char **argv) {
   ClientConfig config;
   config.parse(argc, const_cast<char **>(argv));
 
-  ClientSettings settings{config.get<std::string>("server.host"),
-                        config.get<uint16_t>("server.port"),
-                        config.get<uint16_t>("client.workers_count"),
-                        config.get<std::string>("client.log_file_path")};
+  ClientSettings settings{config.get<std::string>("server_url"),
+                        config.get<uint16_t>("server_port"),
+                        config.get<uint16_t>("workers_count"),
+                        config.get<std::string>("logs_directory_path")};
 
   ClientManager client_manager(settings);
   client_manager.start();
