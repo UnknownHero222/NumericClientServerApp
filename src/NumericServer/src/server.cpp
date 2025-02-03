@@ -1,5 +1,5 @@
 #include "server.h"
-#include "simple_logger.h"
+#include "SimpleLogger/simple_logger.h"
 #include <fstream>
 #include <iostream>
 #include <random>

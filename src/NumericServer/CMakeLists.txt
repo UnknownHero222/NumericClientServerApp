@@ -6,4 +6,7 @@ add_executable(NumericServer ${SERVER_SOURCES})
 
 
 target_include_directories(NumericServer PRIVATE ${Boost_INCLUDE_DIRS})
-target_link_libraries(NumericServer PRIVATE Boost::program_options Boost::system simple_logger)
+target_link_libraries(NumericServer PRIVATE 
+                                    common
+                                    Boost::program_options
+)
