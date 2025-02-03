@@ -4,5 +4,6 @@ file(GLOB_RECURSE SERVER_SOURCES src/*.cpp)
 
 add_executable(NumericServer ${SERVER_SOURCES})
 
+
 target_include_directories(NumericServer PRIVATE ${Boost_INCLUDE_DIRS})
-target_link_libraries(NumericServer PRIVATE ${Boost_LIBRARIES} simple_logger)
+target_link_libraries(NumericServer PRIVATE Boost::program_options Boost::system simple_logger)

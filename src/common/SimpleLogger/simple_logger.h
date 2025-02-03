@@ -20,7 +20,7 @@ private:
   static void write_log(const std::string &prefix, const std::string &message);
 
 private:
-  static std::string service_name_{"DefaultService"};
+  static std::string service_name_;
   static std::string log_filepath_;
 };
 } // namespace common
