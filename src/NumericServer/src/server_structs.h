@@ -8,7 +8,7 @@ namespace NumericServer {
 struct ServerSettings {
   std::string host;
   uint32_t port;
-  uint32_t dump_interval_seconds;
+  int dump_interval_seconds;
   std::string dump_file_path;
   std::string logs_directory_path;
 };

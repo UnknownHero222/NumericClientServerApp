@@ -10,10 +10,11 @@ int main(int argc, const char **argv) {
     ServerConfig config;
     config.parse(argc, const_cast<char **>(argv));
 
-    ServerSettings settings{config.get<std::string>("server.host"),
-                            config.get<uint16_t>("server.port"),
-                            config.get<uint16_t>("server.dump_timeout_sec"), 
-                            config.get<std::string>("log.logs_directory_path")};
+    ServerSettings settings{config.get<std::string>("host"),
+                            config.get<uint16_t>("port"),
+                            config.get<int>("dump_timeout_sec"), 
+                            config.get<std::string>("dump_file_path"),
+                            config.get<std::string>("logs_directory_path")};
 
     boost::asio::io_context io_context;
     NumericServer::Server server(settings, io_context);

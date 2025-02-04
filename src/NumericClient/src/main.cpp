@@ -10,9 +10,10 @@ int main(int argc, const char **argv) {
   ClientConfig config;
   config.parse(argc, const_cast<char **>(argv));
 
+
   ClientSettings settings{config.get<std::string>("server_url"),
-                        config.get<uint16_t>("server_port"),
-                        config.get<uint16_t>("workers_count"),
+                        config.get<uint32_t>("server_port"),
+                        config.get<uint32_t>("workers_count"),
                         config.get<std::string>("logs_directory_path")};
 
   ClientManager client_manager(settings);

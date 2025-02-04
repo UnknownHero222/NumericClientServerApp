@@ -12,8 +12,6 @@ class BaseConfig {
 protected:
     po::variables_map vm;
 
-    virtual void postprocess_options() {}
-
 public:
     virtual ~BaseConfig() = default;
 
@@ -31,13 +29,11 @@ protected:
 class ServerConfig : public BaseConfig {
 public:
     void parse_config_file(std::ifstream& config_file) override;
-    void postprocess_options() override;
 };
 
 class ClientConfig : public BaseConfig {
 public:
     void parse_config_file(std::ifstream& config_file) override;
-    void postprocess_options() override;
 };
 
 } // namespace common
