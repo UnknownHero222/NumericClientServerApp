@@ -5,23 +5,25 @@ using namespace common;
 std::string SimpleLogger::service_name_;
 std::string SimpleLogger::log_filepath_;
 
-  void SimpleLogger::config_setup(const std::string &name, const std::string &log_filepath) {
-    service_name_ = name;
+void SimpleLogger::config_setup(const std::string &name,
+                                const std::string &log_filepath) {
+  service_name_ = name;
 
-    std::string clean_log_path = log_filepath;
-    if (!clean_log_path.empty() && clean_log_path.front() == '"' && clean_log_path.back() == '"') {
-        clean_log_path = clean_log_path.substr(1, clean_log_path.size() - 2);
-    }
+  std::string clean_log_path = log_filepath;
+  if (!clean_log_path.empty() && clean_log_path.front() == '"' &&
+      clean_log_path.back() == '"') {
+    clean_log_path = clean_log_path.substr(1, clean_log_path.size() - 2);
+  }
 
-    if (clean_log_path.empty() || clean_log_path.back() != '/') {
-        clean_log_path += "/";
-    }
+  if (clean_log_path.empty() || clean_log_path.back() != '/') {
+    clean_log_path += "/";
+  }
 
-    log_filepath_ = clean_log_path + service_name_ + ".log";
+  log_filepath_ = clean_log_path + service_name_ + ".log";
 
-    std::cout << "Log file path: " << log_filepath_ << std::endl;
+  std::cout << "Log file path: " << log_filepath_ << std::endl;
 
-    std::filesystem::create_directories(clean_log_path);
+  std::filesystem::create_directories(clean_log_path);
 }
 
 void SimpleLogger::log(const std::string &message) { write_log("", message); }
