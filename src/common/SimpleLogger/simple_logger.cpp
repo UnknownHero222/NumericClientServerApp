@@ -5,11 +5,23 @@ using namespace common;
 std::string SimpleLogger::service_name_;
 std::string SimpleLogger::log_filepath_;
 
-void SimpleLogger::set_service_name(const std::string &name) {
-  service_name_ = name;
-  log_filepath_ = "logs/" + service_name_ + ".log";
+  void SimpleLogger::config_setup(const std::string &name, const std::string &log_filepath) {
+    service_name_ = name;
 
-  std::filesystem::create_directories("logs");
+    std::string clean_log_path = log_filepath;
+    if (!clean_log_path.empty() && clean_log_path.front() == '"' && clean_log_path.back() == '"') {
+        clean_log_path = clean_log_path.substr(1, clean_log_path.size() - 2);
+    }
+
+    if (clean_log_path.empty() || clean_log_path.back() != '/') {
+        clean_log_path += "/";
+    }
+
+    log_filepath_ = clean_log_path + service_name_ + ".log";
+
+    std::cout << "Log file path: " << log_filepath_ << std::endl;
+
+    std::filesystem::create_directories(clean_log_path);
 }
 
 void SimpleLogger::log(const std::string &message) { write_log("", message); }

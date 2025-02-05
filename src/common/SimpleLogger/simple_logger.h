@@ -11,7 +11,7 @@ namespace common {
 
 class SimpleLogger {
 public:
-  static void set_service_name(const std::string &name);
+  static void config_setup(const std::string &name, const std::string &log_filepath);
   static void log(const std::string &message);
   static void error_log(const std::string &message);
 

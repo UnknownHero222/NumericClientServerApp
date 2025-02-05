@@ -12,7 +12,7 @@ using namespace boost::asio::ip;
 Server::Server(const ServerSettings &settings, io_context &io_context)
     : settings_(settings), io_context_(io_context),
       acceptor_(io_context, tcp::endpoint(tcp::v4(), settings.port)) {
-  SimpleLogger::set_service_name("NumericServer");
+  SimpleLogger::config_setup("NumericServer", settings.logs_directory_path);
 
   start_accept();
 
